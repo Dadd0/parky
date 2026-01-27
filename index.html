@@ -1,14 +1,33 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Geolocation</title>
-    </head>
-    <body>
-        <h1>Get Location</h1>
-        <button id="getLocation">Press to get the location</button>
-        <p id="location"></p>
-        <script src="location.js"></script>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parky</title>
+</head>
+
+<body>
+  <input type="checkbox" id="nav-toggle" hidden checked>
+  
+  <label for="nav-toggle" class="menu-btn" title="Toggle Sidebar">
+    <span></span>
+  </label>
+
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <h2 style="margin:0; font-family: sans-serif;">Parky</h2>
+    </div>
+    <div class="sidebar-content">
+      <button id="getLocation" class="primary-btn">Set Location</button>
+      <div id="location" class="status-box">Ready</div>
+    </div>
+  </aside>
+
+  <main id="map"></main>
+
+  <script type="module" src="./main.js"></script>
+</body>
+
 </html>
