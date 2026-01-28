@@ -1,4 +1,4 @@
-import './style.css';
+import '../style.css';
 import {Map, View} from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
@@ -24,9 +24,9 @@ const markerLayer = new VectorLayer({
   }),
   style: new Style({
     image: new CircleStyle({
-      radius: 6,
-      fill: new Fill({ color: '#0b5f5a' }),
-      stroke: new Stroke({ color: '#ffffff', width: 2 })
+      radius: 9,
+      fill: new Fill({ color: '#0078fc' }),
+      stroke: new Stroke({ color: '#ffffff', width: 3 })
     })
   })
 });
