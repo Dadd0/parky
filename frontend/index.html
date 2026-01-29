@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🅿️</text></svg>">
   <title>Parky</title>
 </head>
-
 <body>
-  <input type="checkbox" id="nav-toggle" hidden checked>
-
-  <label for="nav-toggle" class="menu-btn" title="Toggle Sidebar">
-    <span></span>
-  </label>
-
-  <aside id="sidebar">
-    <div class="sidebar-header">
-      <h2 style="margin:0; font-family: sans-serif;">Parky</h2>
-    </div>
-    <div class="sidebar-content">
-      <button id="getLocation" class="primary-btn">Set Location</button>
-      <div id="location" class="status-box">Ready</div>
-    </div>
-  </aside>
-
   <main id="map"></main>
+
+  <button id="carBtn" aria-label="Select vehicle">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 11l1.5-4.5h11L19 11m-1.5 5a1.5 1.5 0 110-3 1.5 1.5 0 010 3m-11 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3M3 11V6h2l1.5-4h11L19 6h2v5l-2 .5V17a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H8v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-5.5L3 11z"/></svg>
+    <span id="carName">Select</span>
+  </button>
+
+  <div id="sheet" class="hidden">
+    <div id="sheetBg"></div>
+    <div id="sheetContent">
+      <h2>Select Vehicle</h2>
+      <ul id="carList"></ul>
+    </div>
+  </div>
+
+  <button id="parkBtn" aria-label="Save parking location" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <path d="M12 2v20M2 12h20"/>
+    </svg>
+  </button>
+  <output id="status"></output>
 
   <script type="module" src="./src/main.js"></script>
 </body>
-
 </html>
