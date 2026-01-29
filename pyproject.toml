@@ -3,6 +3,7 @@ name = "parky"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi[dev]>=0.128.0",
+    "fastapi[dev,standard]>=0.128.0",
+    "scalar-fastapi>=1.6.1",
     "sqlmodel>=0.0.31",
 ]
