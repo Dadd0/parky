@@ -1,0 +1,11 @@
+ **/__pycache__
+ **/*.pyc
+ **/.git
+ **/.gitignore
+ **/node_modules
+ **/.env
+ **/venv
+ **/*.md
+ **/.vscode
+ **/dist
+ **/.pytest_cache

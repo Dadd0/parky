@@ -20,7 +20,12 @@ def get_session():
 
 
 def get_current_user(request: Request, session: Session = Depends(get_session)):
-    client_ip = request.client.host
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        client_ip = forwarded_for.split(",")[0].strip()
+    else:
+        client_ip = request.client.host
+
     user = session.exec(select(Users).where(Users.tailscale_ip == client_ip)).first()
     if not user:
         raise HTTPException(

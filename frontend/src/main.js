@@ -23,6 +23,14 @@ const status = $('status');
 const popupContainer = $('popup');
 const popupContent = $('popup-content');
 const popupCloser = $('popup-closer');
+const userBtn = $('userBtn');
+const userSheet = $('userSheet');
+const userSheetBg = $('userSheetBg');
+const userName = $('userName');
+const userIp = $('userIp');
+const userAvatar = $('userAvatar');
+
+let currentUser = null;
 
 const overlay = new Overlay({
   element: popupContainer,
@@ -141,7 +149,7 @@ function renderCarMarkers() {
   carSource.clear();
   carSource.addFeatures(features);
 }
-
+  
 function updateSelectedCar(car) {
   selectedCar = car;
   localStorage.setItem('selectedCar', JSON.stringify(car));
@@ -156,10 +164,50 @@ function toggleMenu(show) {
     sheet.classList.remove('hidden');
     parkBtn.classList.add('hidden');
     rollbackBtn.classList.add('hidden');
+    userBtn.classList.add('hidden');
   } else {
     sheet.classList.add('hidden');
     parkBtn.classList.remove('hidden');
     rollbackBtn.classList.remove('hidden');
+    userBtn.classList.remove('hidden');
+  }
+}
+
+function toggleUserSheet(show) {
+  if (show) {
+    userSheet.classList.remove('hidden');
+    parkBtn.classList.add('hidden');
+    rollbackBtn.classList.add('hidden');
+    carBtn.classList.add('hidden');
+  } else {
+    userSheet.classList.add('hidden');
+    parkBtn.classList.remove('hidden');
+    rollbackBtn.classList.remove('hidden');
+    carBtn.classList.remove('hidden');
+  }
+}
+
+async function loadUser() {
+  try {
+    const resp = await fetch('api/whoami');
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.known) {
+        userName.textContent = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+        userAvatar.textContent = data.name.charAt(0).toUpperCase();
+      } else {
+        userName.textContent = 'Unknown User';
+        userAvatar.textContent = '?';
+      }
+    } else {
+      userName.textContent = 'Unknown User';
+      userIp.textContent = 'Not authenticated';
+      userAvatar.textContent = '?';
+    }
+  } catch {
+    userName.textContent = 'Unknown User';
+    userIp.textContent = 'Connection error';
+    userAvatar.textContent = '?';
   }
 }
 
@@ -238,5 +286,12 @@ rollbackBtn.onclick = async () => {
     rollbackBtn.classList.remove('loading');
   }
 };
+userBtn.onclick = () => {
+  loadUser();
+  toggleUserSheet(true);
+};
+
+userSheetBg.onclick = () => toggleUserSheet(false);
 
 loadCars();
+loadUser();
