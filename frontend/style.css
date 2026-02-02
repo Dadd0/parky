@@ -40,6 +40,39 @@ body {
   height: 1.25rem;
 }
 
+#rollbackBtn {
+  position: fixed;
+  bottom: max(2rem, env(safe-area-inset-bottom, 2rem));
+  left: calc(50% + 3.5rem);
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: #2B2A2A;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #0002;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#rollbackBtn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+#rollbackBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+#rollbackBtn.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 #sheet {
   z-index: 2000;
 }
@@ -178,4 +211,72 @@ body {
   from {
     translate: 0 100%;
   }
+}
+
+/* Popup styles */
+.ol-popup {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 25px;
+  /* Moved up to not overlap with marker text */
+  left: -50px;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.ol-popup:after,
+.ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  color: #999;
+}
+
+.ol-popup-closer:after {
+  content: "✖";
+}
+
+.ol-popup h3 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.ol-popup p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.hidden {
+  display: none !important;
 }

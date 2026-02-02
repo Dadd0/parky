@@ -13,6 +13,24 @@ class LocationUpdate(BaseModel):
 
 
 class LocationResponse(BaseModel):
+    id: int
     latitude: float
     longitude: float
-    updated_at: datetime
+    parked_at: datetime
+
+
+class CarLocation(BaseModel):
+    id: int
+    name: str
+    latitude: float | None = None
+    longitude: float | None = None
+    parked_at: datetime | None = None
+    parked_by: str | None = None
+
+
+class ParkingHistoryItem(BaseModel):
+    id: int
+    latitude: float
+    longitude: float
+    parked_at: datetime
+    user_id: int
