@@ -119,8 +119,24 @@ def get_health():
 
 
 @app.get("/whoami")
-def whoami(request: Request):
-    return {"client_ip": request.client.host}
+def whoami(request: Request, session: Session = Depends(get_session)):
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        client_ip = forwarded_for.split(",")[0].strip()
+    else:
+        client_ip = request.client.host
+
+    user = session.exec(select(Users).where(Users.tailscale_ip == client_ip)).first()
+
+    if user:
+        return {
+            "client_ip": client_ip,
+            "known": True,
+            "name": user.name,
+            "user_id": user.id,
+        }
+    else:
+        return {"client_ip": client_ip, "known": False, "name": None, "user_id": None}
 
 
 @app.get("/scalar", include_in_schema=False)
