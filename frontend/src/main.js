@@ -1,25 +1,45 @@
 import '../style.css';
-import { Map, View } from 'ol';
+import { Map, View, Overlay } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { Circle, Fill, Stroke, Style, Icon } from 'ol/style';
+import { Circle, Fill, Stroke, Style, Icon, Text } from 'ol/style';
 import { useGeographic } from 'ol/proj';
 
 useGeographic();
 
 const $ = id => document.getElementById(id);
 const parkBtn = $('parkBtn');
+const rollbackBtn = $('rollbackBtn');
 const carBtn = $('carBtn');
 const carName = $('carName');
 const sheet = $('sheet');
 const sheetBg = $('sheetBg');
 const carList = $('carList');
 const status = $('status');
-const CAR_SVG = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="#ffffff" stroke="#2B2A2A" stroke-width="2"/><path fill="#2B2A2A" transform="translate(6,6)" d="M6 19v1q0 .425-.288.713T5 21H4q-.425 0-.712-.288T3 20v-8l2.1-6q.15-.45.538-.725T6.5 5h11q.475 0 .863.275T18.9 6l2.1 6v8q0 .425-.287.713T20 21h-1q-.425 0-.712-.288T18 20v-1zm-.2-9h12.4l-1.05-3H6.85zm1.7 6q.625 0 1.063-.437T9 14.5t-.437-1.062T7.5 13t-1.062.438T6 14.5t.438 1.063T7.5 16m9 0q.625 0 1.063-.437T18 14.5t-.437-1.062T16.5 13t-1.062.438T15 14.5t.438 1.063T16.5 16"/></svg>')}`;
+const popupContainer = $('popup');
+const popupContent = $('popup-content');
+const popupCloser = $('popup-closer');
+
+const overlay = new Overlay({
+  element: popupContainer,
+  autoPan: {
+    animation: {
+      duration: 250,
+    },
+  },
+});
+
+popupCloser.onclick = function () {
+  overlay.setPosition(undefined);
+  popupCloser.blur();
+  return false;
+};
+
+const CAR_SVG = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#222222" stroke="#ffffff" stroke-width="2"/><path fill="#ffffff" transform="translate(6,6)" d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>')}`;
 
 let selectedCar = JSON.parse(localStorage.getItem('selectedCar'));
 let cars = [];
@@ -28,6 +48,7 @@ const marker = new Feature();
 const carSource = new VectorSource();
 const map = new Map({
   target: 'map',
+  overlays: [overlay],
   layers: [
     new TileLayer({ source: new OSM() }),
     new VectorLayer({
@@ -42,16 +63,43 @@ const map = new Map({
     }),
     new VectorLayer({
       source: carSource,
-      style: new Style({
+      style: feature => new Style({
         image: new Icon({
           src: CAR_SVG,
           scale: 1.5,
           anchor: [0.5, 0.5]
+        }),
+        text: new Text({
+          text: feature.get('name') ? feature.get('name').toUpperCase() : '',
+          offsetY: 28,
+          font: 'bold 12px sans-serif',
+          fill: new Fill({ color: '#222' }),
+          stroke: new Stroke({ color: '#fff', width: 3 }),
+          backgroundFill: new Fill({ color: 'rgba(255, 255, 255, 0.7)' }),
+          padding: [2, 5, 2, 5]
         })
       })
     })
   ],
   view: new View({ center: [0, 0], zoom: 2 })
+});
+
+map.on('singleclick', function (evt) {
+  const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+    return feature;
+  });
+
+  if (feature && feature.get('carId')) {
+    const coordinates = feature.getGeometry().getCoordinates();
+    const name = feature.get('name').toUpperCase();
+    const parkedBy = feature.get('parkedBy') || 'Unknown';
+    const parkedAt = feature.get('parkedAt') ? new Date(feature.get('parkedAt')).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' }) : 'Unknown';
+    
+    popupContent.innerHTML = `<h3>${name}</h3><p>Parked by: ${parkedBy}</p><p>Time: ${parkedAt}</p>`;
+    overlay.setPosition(coordinates);
+  } else {
+    overlay.setPosition(undefined);
+  }
 });
 
 navigator.geolocation.getCurrentPosition(
@@ -85,7 +133,10 @@ function renderCarMarkers() {
     .filter(c => c.latitude && c.longitude)
     .map(c => new Feature({
       geometry: new Point([c.longitude, c.latitude]),
-      carId: c.id
+      carId: c.id,
+      name: c.name,
+      parkedBy: c.parked_by,
+      parkedAt: c.parked_at
     }));
   carSource.clear();
   carSource.addFeatures(features);
@@ -96,11 +147,24 @@ function updateSelectedCar(car) {
   localStorage.setItem('selectedCar', JSON.stringify(car));
   carName.textContent = car.name.toUpperCase();
   parkBtn.disabled = false;
+  rollbackBtn.disabled = false;
   renderCarList();
 }
 
-carBtn.onclick = () => sheet.classList.remove('hidden');
-sheetBg.onclick = () => sheet.classList.add('hidden');
+function toggleMenu(show) {
+  if (show) {
+    sheet.classList.remove('hidden');
+    parkBtn.classList.add('hidden');
+    rollbackBtn.classList.add('hidden');
+  } else {
+    sheet.classList.add('hidden');
+    parkBtn.classList.remove('hidden');
+    rollbackBtn.classList.remove('hidden');
+  }
+}
+
+carBtn.onclick = () => toggleMenu(true);
+sheetBg.onclick = () => toggleMenu(false);
 
 carList.onclick = e => {
   const li = e.target.closest('li');
@@ -108,7 +172,8 @@ carList.onclick = e => {
   const car = cars.find(c => c.id === +li.dataset.id);
   if (car) {
     updateSelectedCar(car);
-    sheet.classList.add('hidden');
+    toggleMenu(false);
+    map.getView().animate({center: [car.longitude, car.latitude], zoom: 18, duration: 400})
   }
 };
 
@@ -131,7 +196,7 @@ parkBtn.onclick = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ car_id: selectedCar.id, latitude, longitude })
     });
-
+    if (resp.status === 403) throw new Error("Unknown user");
     if (!resp.ok) throw new Error('Save failed');
 
     marker.setGeometry(new Point([longitude, latitude]));
@@ -149,6 +214,28 @@ parkBtn.onclick = async () => {
     status.textContent = e.message || 'Location unavailable';
   } finally {
     parkBtn.classList.remove('loading');
+  }
+};
+
+rollbackBtn.onclick = async () => {
+  if (!selectedCar) return;
+  rollbackBtn.classList.add('loading');
+  status.textContent = '';
+
+  try {
+    const resp = await fetch(`/api/cars/${selectedCar.id}/rollback`)
+    if (!resp.ok) throw new Error("Rollback failed");
+
+    await loadCars();
+
+    const car = cars.find(c => c.id === selectedCar.id);
+    if (car?.latitude && car?.longitude) {
+      map.getView().animate({center: [car.longitude, car.latitude], zoom: 18, duration: 400});
+    }
+  } catch (e) {
+    status.textContent = e.message || "Rollback failed";
+  } finally {
+    rollbackBtn.classList.remove('loading');
   }
 };
 

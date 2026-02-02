@@ -1,4 +1,5 @@
-from sqlmodel import create_engine, SQLModel, Session
+from fastapi import Request, Depends, HTTPException, status
+from sqlmodel import create_engine, SQLModel, Session, select
 from backend.models import Cars, Users
 from pathlib import Path
 
@@ -18,5 +19,11 @@ def get_session():
         yield session
 
 
-if __name__ == "__main__":
-    create_db_tables()
+def get_current_user(request: Request, session: Session = Depends(get_session)):
+    client_ip = request.client.host
+    user = session.exec(select(Users).where(Users.tailscale_ip == client_ip)).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=f"Unknown device: {client_ip}"
+        )
+    return user

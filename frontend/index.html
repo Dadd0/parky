@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1a1a2e">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🅿️</text></svg>">
+  <link rel="icon" sizes=48x48 href="public/icon/parky-logo.png">
   <title>Parky</title>
 </head>
+
 <body>
   <main id="map"></main>
 
+  <div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+  </div>
+
   <button id="carBtn" aria-label="Select vehicle">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 11l1.5-4.5h11L19 11m-1.5 5a1.5 1.5 0 110-3 1.5 1.5 0 010 3m-11 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3M3 11V6h2l1.5-4h11L19 6h2v5l-2 .5V17a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H8v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-5.5L3 11z"/></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path
+        d="M5 11l1.5-4.5h11L19 11m-1.5 5a1.5 1.5 0 110-3 1.5 1.5 0 010 3m-11 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3M3 11V6h2l1.5-4h11L19 6h2v5l-2 .5V17a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H8v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-5.5L3 11z" />
+    </svg>
     <span id="carName">Select</span>
   </button>
 
@@ -26,11 +36,20 @@
 
   <button id="parkBtn" aria-label="Save parking location" disabled>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-      <path d="M12 2v20M2 12h20"/>
+      <path d="M12 2v20M2 12h20" />
+    </svg>
+  </button>
+  <button id="rollbackBtn" aria-label="Undo last parking" disabled>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <path d="m9 14l-4-4l4-4" />
+        <path d="M5 10h11a4 4 0 1 1 0 8h-1" />
+      </g>
     </svg>
   </button>
   <output id="status"></output>
 
   <script type="module" src="./src/main.js"></script>
 </body>
+
 </html>
