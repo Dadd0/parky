@@ -398,6 +398,7 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "scalar-fastapi" },
     { name = "sqlmodel" },
+    { name = "typer" },
 ]
 
 [package.metadata]
@@ -405,6 +406,7 @@ requires-dist = [
     { name = "fastapi", extras = ["dev", "standard"], specifier = ">=0.128.0" },
     { name = "scalar-fastapi", specifier = ">=1.6.1" },
     { name = "sqlmodel", specifier = ">=0.0.31" },
+    { name = "typer", extras = ["all"], specifier = ">=0.21.1" },
 ]
 
 [[package]]

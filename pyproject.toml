@@ -6,4 +6,5 @@ dependencies = [
     "fastapi[dev,standard]>=0.128.0",
     "scalar-fastapi>=1.6.1",
     "sqlmodel>=0.0.31",
+    "typer[all]>=0.21.1",
 ]

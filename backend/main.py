@@ -14,6 +14,10 @@ from backend.schemas import (
     LocationResponse,
     LocationUpdate,
     ParkingHistoryItem,
+    UserResponse,
+    UserCreate,
+    CarCreate,
+    CarResponse,
 )
 from backend.session import create_db_tables, get_session, get_current_user
 
@@ -120,11 +124,7 @@ def get_health():
 
 @app.get("/whoami")
 def whoami(request: Request, session: Session = Depends(get_session)):
-    forwarded_for = request.headers.get("X-Forwarded-For")
-    if forwarded_for:
-        client_ip = forwarded_for.split(",")[0].strip()
-    else:
-        client_ip = request.client.host
+    client_ip = request.client.host
 
     user = session.exec(select(Users).where(Users.tailscale_ip == client_ip)).first()
 
@@ -137,6 +137,47 @@ def whoami(request: Request, session: Session = Depends(get_session)):
         }
     else:
         return {"client_ip": client_ip, "known": False, "name": None, "user_id": None}
+
+
+@app.post("/users", tags=["setup"], response_model=UserResponse)
+def create_user(
+    payload: UserCreate, request: Request, session: Session = Depends(get_session)
+):
+    client_ip = request.client.host
+    existing = session.exec(
+        select(Users).where(Users.tailscale_ip == client_ip)
+    ).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This device is already registered",
+        )
+    user = Users(name=payload.name, tailscale_ip=client_ip)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user
+
+
+@app.post("/cars", tags=["setup"], response_model=CarResponse)
+def create_car(
+    payload: CarCreate,
+    session: Session = Depends(get_session),
+    user: Users = Depends(get_current_user),
+):
+    existing = session.exec(select(Cars).where(Cars.name == payload.name)).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This car was already registered",
+        )
+    car = Cars(name=payload.name)
+    session.add(car)
+    session.commit()
+    session.refresh(car)
+
+    return car
 
 
 @app.get("/scalar", include_in_schema=False)

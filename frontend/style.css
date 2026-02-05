@@ -294,6 +294,124 @@ body {
   opacity: 1;
 }
 
+#setupSheet,
+#addCarSheet {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+}
+
+#setupSheetBg,
+#addCarSheetBg {
+  position: fixed;
+  inset: 0;
+  background: #000a;
+}
+
+#setupSheetContent,
+#addCarSheetContent {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+}
+
+#setupSheetContent h2,
+#addCarSheetContent h2 {
+  font-size: 1.5rem;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+
+#setupSubtitle {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+#userRegisterForm,
+#addCarForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#userRegisterForm label,
+#addCarForm label {
+  size: 0.875rem;
+  font-weight: 500;
+  color: #444;
+}
+
+#userRegisterForm input,
+#addCarForm input {
+  padding: 0.875rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+#userRegisterForm input:focus,
+#addCarForm input:focus {
+  border-color: #2B2A2A;
+}
+
+#registerBtn,
+#addCarBtn {
+  padding: 1rem;
+  background: #2B2A2A;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#registerBtn:disabled,
+#addCarBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#setupError,
+#addCarError {
+  color: #e84545;
+  font-size: 0.875rem;
+  min-height: 1.25rem;
+}
+
+#skipAddCar {
+  background: none;
+  border: none;
+  color: #666;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+#addNewCarBtn {
+  width: 100%;
+  padding: 0.875rem;
+  margin-top: 1rem;
+  background: #f5f5f5;
+  border: 1px dashed #ccc;
+  border-radius: 0.5rem;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#addNewCarBtn:hover {
+  background: #eee;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
