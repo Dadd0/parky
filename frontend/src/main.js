@@ -30,6 +30,21 @@ const userName = $('userName');
 const userIp = $('userIp');
 const userAvatar = $('userAvatar');
 
+const setupSheet = $('setupSheet');
+const setupSheetBg = $('setupSheetBg');
+const userRegisterForm = $('userRegistrationForm');
+const registerName = $('registerName');
+const registerBtn = $('registerBtn');
+const setupError = $('setupError');
+
+const addCarSheet = $('addCarSheet');
+const addCarSheetBg = $('addCarSheetBg');
+const addCarForm = $('addCarForm');
+const newCarName = $('newCarName');
+const addCarBtn = $('addCarBtn');
+const addCarError = $('addCarError');
+const addNewCarBtn = $('addNewCarBtn');
+
 let currentUser = null;
 
 const overlay = new Overlay({
@@ -187,6 +202,30 @@ function toggleUserSheet(show) {
   }
 }
 
+function showSetupSheet() {
+  setupSheet.classList.remove('hidden');
+  parkBtn.classList.add('hidden');
+  rollbackBtn.classList.add('hidden');
+  carBtn.classList.add('hidden');
+  userBtn.classList.add('hidden');
+}
+
+function showAddCarSheet() {
+  addCarSheet.classList.remove('hidden');
+}
+
+function hideSetupSheet() {
+  setupSheet.classList.add('hidden');
+  parkBtn.classList.remove('hidden');
+  rollbackBtn.classList.remove('hidden');
+  carBtn.classList.remove('hidden');
+  userBtn.classList.remove('hidden');
+}
+
+function hideAddCarSheet() {
+  addCarSheet.classList.add('hidden');
+}
+
 async function loadUser() {
   try {
     const resp = await fetch('api/whoami');
@@ -211,6 +250,15 @@ async function loadUser() {
   }
 }
 
+async function checkUser() {
+  try {
+    const resp = await fetch("/api/whoami");
+    return await resp.json();
+  } catch {
+    return {known: false, client_ip: null};
+  }
+}
+
 carBtn.onclick = () => toggleMenu(true);
 sheetBg.onclick = () => toggleMenu(false);
 
@@ -221,7 +269,15 @@ carList.onclick = e => {
   if (car) {
     updateSelectedCar(car);
     toggleMenu(false);
-    map.getView().animate({center: [car.longitude, car.latitude], zoom: 18, duration: 400})
+    if (car.latitude && car.longitude) {
+      map.getView().animate({center: [car.longitude, car.latitude], zoom: 18, duration: 400})
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        pos => map.getView().animate({center: [pos.coords.longitude, pos.coords.latitude], zoom:17, duration: 400}),
+        () => {},
+        {enableHighAccuracy: true}
+      );
+    }
   }
 };
 
@@ -293,5 +349,90 @@ userBtn.onclick = () => {
 
 userSheetBg.onclick = () => toggleUserSheet(false);
 
-loadCars();
-loadUser();
+userRegisterForm.onsubmit = async (e) => {
+  e.preventDefault();
+  setupError.textContent = '';
+  registerBtn.disabled = true;
+
+  try {
+    const resp = await fetch('/api/users', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name: registerName.value.trim()})
+    });
+
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.detail || "Registration Failed");
+    }
+
+    currentUser = await checkUser();
+    hideSetupSheet();
+    await loadCars();
+    await loadUser();
+
+    if (cars.length === 0) {
+      showAddCarSheet();
+    }
+  } catch (err) {
+    setupError.textContent = err.message;
+  } finally {
+    registerBtn.disabled = false;
+  }
+};
+
+addCarForm.onsubmit = async (e) => {
+  e.preventDefault();
+  addCarError.textContent = '';
+  addCarBtn.disabled = true;
+
+  try {
+    const resp = await fetch('/api/cars', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name: newCarName.value.trim()})
+    });
+
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.detail || "Failed to add Vehicle");
+    }
+
+    await loadCars();
+    hideAddCarSheet();
+    newCarName.value = '';
+
+    if (cars.length === 1) {
+      updateSelectedCar(cars[0]);
+    }
+  } catch (err) {
+    addCarError.textContent = err.message;
+  } finally {
+    addCarBtn.disabled = false;
+  }
+};
+
+addNewCarBtn.onclick = () => {
+  toggleMenu(false);
+  showAddCarSheet();
+}
+
+addCarSheetBg.onclick = () => hideAddCarSheet();
+
+async function init() {
+  const whoami = await checkUser();
+
+  if (!whoami.known) {
+    showSetupSheet();
+    return;
+  }
+  currentUser = whoami;
+  await loadCars();
+  await loadUser();
+
+  if (cars.length === 0) {
+    showAddCarSheet();
+  }
+}
+
+init();

@@ -19,6 +19,15 @@ class LocationResponse(BaseModel):
     parked_at: datetime
 
 
+class CarCreate(BaseModel):
+    name: str
+
+
+class CarResponse(BaseModel):
+    id: int
+    name: str
+
+
 class CarLocation(BaseModel):
     id: int
     name: str
@@ -34,3 +43,13 @@ class ParkingHistoryItem(BaseModel):
     longitude: float
     parked_at: datetime
     user_id: int
+
+
+class UserCreate(BaseModel):
+    name: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    tailscale_ip: str

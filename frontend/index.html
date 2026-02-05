@@ -31,6 +31,7 @@
     <div id="sheetContent">
       <h2>Select Vehicle</h2>
       <ul id="carList"></ul>
+      <button id="addNewCarBtn">+ Add New Vehicle</button>
     </div>
   </div>
 
@@ -50,7 +51,8 @@
 
   <button id="userBtn" aria-label="User info">
     <svg viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      <path
+        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
     </svg>
   </button>
 
@@ -65,6 +67,33 @@
       </div>
     </div>
   </div>
+
+  <div id="setupSheet" class="hidden">
+    <div id="setupSheetBg"></div>
+    <div id="setupSheetContent">
+      <h2>User Registration</h2>
+      <form id="userRegistrationForm">
+        <label for="registerName">Name</label>
+        <input type="text" id="registerName" placeholder="Enter your name" required autocomplete="name" />
+        <button type="submit" id="registerBtn">Register</button>
+      </form>
+      <p id="setupError"></p>
+    </div>
+  </div>
+
+  <div id="addCarSheet" class="hidden">
+    <div id="addCarSheetBg"></div>
+    <div id="addCarSheetContent">
+      <h2>Add a vehicle</h2>
+      <form id="addCarForm">
+        <label for="newCarName">Vehicle Name</label>
+        <input type="text" id="newCarName" required>
+        <button type="submit" id="addCarBtn">Add Vehicle</button>
+      </form>
+      <p id="addCarError"></p>
+    </div>
+  </div>
+
 
   <output id="status"></output>
 
