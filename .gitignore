@@ -358,3 +358,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+*.sql
+*.db
+*.sqlite
+*.sqlite3
