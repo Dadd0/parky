@@ -24,10 +24,10 @@ It uses tailscale to avoid headaches with network configurations and security co
 <table>
   <tr>
     <td align="center">
-      <img src="frontend/public/screenshot_1.jpeg" alt="Map View" width="420" />
+      <img src="frontend/public/screenshot_2.jpeg" alt="Map View" width="420" />
     </td>
     <td align="center">
-      <img src="frontend/public/screenshot_2.jpeg" alt="Vehicle Selection" width="420" />
+      <img src="frontend/public/screenshot_1.jpeg" alt="Vehicle Selection" width="420" />
     </td>
   </tr>
   <tr>
