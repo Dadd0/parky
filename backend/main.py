@@ -19,7 +19,7 @@ from backend.schemas import (
     CarCreate,
     CarResponse,
 )
-from backend.session import create_db_tables, get_session, get_current_user
+from backend.session import create_db_tables, get_session, get_current_user, get_client_ip
 
 
 @asynccontextmanager
@@ -124,7 +124,11 @@ def get_health():
 
 @app.get("/whoami")
 def whoami(request: Request, session: Session = Depends(get_session)):
-    client_ip = request.client.host
+    client_ip = get_client_ip(request)
+    raw_ip = request.client.host
+    x_forwarded = request.headers.get("X-Forwarded-For")
+    
+    print(f"[WHOAMI] Raw IP: {raw_ip}, X-Forwarded-For: {x_forwarded}, Final IP: {client_ip}")
 
     user = session.exec(select(Users).where(Users.tailscale_ip == client_ip)).first()
 
@@ -143,7 +147,7 @@ def whoami(request: Request, session: Session = Depends(get_session)):
 def create_user(
     payload: UserCreate, request: Request, session: Session = Depends(get_session)
 ):
-    client_ip = request.client.host
+    client_ip = get_client_ip(request)
     existing = session.exec(
         select(Users).where(Users.tailscale_ip == client_ip)
     ).first()

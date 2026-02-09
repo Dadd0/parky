@@ -228,7 +228,7 @@ function hideAddCarSheet() {
 
 async function loadUser() {
   try {
-    const resp = await fetch('api/whoami');
+    const resp = await fetch('/api/whoami');
     if (resp.ok) {
       const data = await resp.json();
       if (data.known) {
@@ -253,8 +253,11 @@ async function loadUser() {
 async function checkUser() {
   try {
     const resp = await fetch("/api/whoami");
-    return await resp.json();
-  } catch {
+    const data = await resp.json();
+    console.log("checkUser response:", data);
+    return data;
+  } catch (err) {
+    console.error("checkUser error:", err);
     return {known: false, client_ip: null};
   }
 }

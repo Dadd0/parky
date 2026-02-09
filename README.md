@@ -52,13 +52,21 @@ It uses tailscale to avoid headaches with network configurations and security co
 ### Run
 
 ```bash
-docker compose up
+docker compose up -d --build
 tailscale serve 9000
 ```
 
 Tailscale will give the URL where the app will be accessible.
 
 > **NOTE**: the app will ONLY be accessible from devices that are part of your tailnet.
+
+### Oracle VM
+
+This branch has changes specific to running on an Oracle Cloud VM behind `tailscale serve`. The standard Docker networking (bridge mode) hides the real Tailscale IP behind Docker's NAT, so the backend can't identify users.
+
+Changes from `main`:
+- **docker-compose.yml** — uses `network_mode: host` instead of port mappings, so the backend sees the actual Tailscale IP from incoming requests
+- **nginx.conf** — listens on port `9000` directly (instead of `80`) and proxies to `127.0.0.1:8000` (instead of the `backend` Docker DNS name, which doesn't work with host networking)
 
 ## API
 

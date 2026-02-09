@@ -19,8 +19,15 @@ def get_session():
         yield session
 
 
+def get_client_ip(request: Request) -> str:
+    x_forwarded_for = request.headers.get("X-Forwarded-For")
+    if x_forwarded_for:
+        return x_forwarded_for.split(",")[0].strip()
+    return request.client.host
+
+
 def get_current_user(request: Request, session: Session = Depends(get_session)):
-    client_ip = request.client.host
+    client_ip = get_client_ip(request)
 
     user = session.exec(select(Users).where(Users.tailscale_ip == client_ip)).first()
     if not user:
